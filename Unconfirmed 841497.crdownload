@@ -1,0 +1,414 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+import pandas as pd
+
+
+# In[2]:
+
+
+import pandas as pd
+
+ratings_df = pd.read_csv("P:\\ratings.csv")  # Replace 'path/to/ratings.csv' with the actual path to your file
+
+
+
+print("Shape of ratings.csv:", shape_of_ratings)
+
+
+# In[3]:
+
+
+tags = pd.read_csv("P:\\tags.csv")
+movie = pd.read_csv("P:\\movies.csv")
+link = pd.read_csv("P:\\links.csv")
+
+
+
+# In[4]:
+
+
+unique_user_ids = ratings_df['userId'].nunique()
+
+
+print("Number of unique userId in ratings.csv:", unique_user_ids)
+
+
+# In[5]:
+
+
+import pandas as pd
+
+tags = pd.read_csv("P:\\tags.csv")
+movies = pd.read_csv("P:\\movies.csv")
+links = pd.read_csv("P:\\links.csv")
+ratings_df = pd.read_csv("P:\\ratings.csv") 
+ratings_count = ratings_df.groupby('movieId')['rating'].count()
+
+max_ratings_movie_id = ratings_count.idxmax()
+
+max_ratings_movie_details = movies[movies['movieId'] == max_ratings_movie_id]
+
+# Print the result
+print("Movie with the maximum number of user ratings:")
+print(max_ratings_movie_details[['movieId', 'title']])
+
+
+# In[6]:
+
+
+import pandas as pd
+
+tags = pd.read_csv("P:\\tags.csv")
+
+matrix_tags = tags[tags['movieId'] == matrix_movie_id]
+
+print("Tags for Matrix, The (1999):")
+print(matrix_tags[['userId', 'tag']])
+
+
+# In[7]:
+
+
+import pandas as pd
+
+ratings = pd.read_csv("P:\\ratings.csv")
+
+terminator_ratings = ratings[ratings['movieId'] == terminator_movie_id]
+
+average_rating = terminator_ratings['rating'].mean()
+
+print(f"Average rating for Terminator 2: Judgment Day (1991): {average_rating:.2f}")
+
+
+# In[8]:
+
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+ratings = pd.read_csv("P:\\ratings.csv")
+
+fight_club_ratings = ratings[ratings['movieId'] == fight_club_movie_id]
+
+plt.figure(figsize=(10, 6))
+sns.histplot(fight_club_ratings['rating'], bins=5, kde=True, color='skyblue')
+plt.title('User Ratings Distribution for Fight Club (1999)')
+plt.xlabel('User Ratings')
+plt.ylabel('Frequency')
+plt.show()
+
+
+# In[11]:
+
+
+import pandas as pd
+
+# Assuming you have already loaded the DataFrames
+movies = pd.read_csv("P:\\movies.csv")
+ratings_df = pd.read_csv("P:\\ratings.csv")
+
+# Mandatory Operations
+# Group the user ratings based on movieId and apply aggregation operations like count and mean on ratings.
+grouped_ratings = ratings_df.groupby('movieId')['rating'].agg(['mean', 'count'])
+
+# Apply inner join on the dataframe created from movies.csv and the grouped df from the previous step.
+merged_data = pd.merge(grouped_ratings, movies, on='movieId', how='inner')
+
+# Filter only those movies which have more than 50 user ratings.
+filtered_data = merged_data[merged_data['count'] > 50]
+
+# Find the movie with the highest average rating
+most_popular_movie = filtered_data[filtered_data['mean'] == filtered_data['mean'].max()]
+
+# Print the result
+print("Most popular movie based on average user ratings:")
+print(most_popular_movie[['movieId', 'title']])
+
+
+# In[12]:
+
+
+import pandas as pd
+
+# Assuming you have already loaded the DataFrames
+movies = pd.read_csv("P:\\movies.csv")
+ratings_df = pd.read_csv("P:\\ratings.csv")
+
+# Mandatory Operations
+# Group the user ratings based on movieId and apply aggregation operations like count and mean on ratings.
+grouped_ratings = ratings_df.groupby('movieId')['rating'].agg(['mean', 'count'])
+
+# Apply inner join on the dataframe created from movies.csv and the grouped df from the previous step.
+merged_data = pd.merge(grouped_ratings, movies, on='movieId', how='inner')
+
+# Filter only those movies which have more than 50 user ratings.
+filtered_data = merged_data[merged_data['count'] > 50]
+
+# Select the top 5 popular movies based on the number of user ratings
+top_5_popular_movies = filtered_data.nlargest(5, 'count')
+
+# Print the result
+print("Top 5 popular movies based on number of user ratings:")
+print(top_5_popular_movies[['movieId', 'title', 'count']])
+
+
+# In[13]:
+
+
+import pandas as pd
+
+# Assuming you have already loaded the DataFrames
+movies = pd.read_csv("P:\\movies.csv")
+ratings_df = pd.read_csv("P:\\ratings.csv")
+
+# Mandatory Operations
+# Group the user ratings based on movieId and apply aggregation operations like count and mean on ratings.
+grouped_ratings = ratings_df.groupby('movieId')['rating'].agg(['mean', 'count'])
+
+# Apply inner join on the dataframe created from movies.csv and the grouped df from the previous step.
+merged_data = pd.merge(grouped_ratings, movies, on='movieId', how='inner')
+
+# Filter only those movies which have more than 50 user ratings.
+filtered_data = merged_data[merged_data['count'] > 50]
+
+# Filter Sci-Fi movies
+sci_fi_movies = filtered_data[filtered_data['genres'].str.contains('Sci-Fi')]
+
+# Find the third most popular Sci-Fi movie based on the number of user ratings
+third_most_popular_sci_fi_movie = sci_fi_movies.nlargest(3, 'count').iloc[-1]
+
+# Print the result
+print("Third most popular Sci-Fi movie based on number of user ratings:")
+print(third_most_popular_sci_fi_movie[['movieId', 'title', 'count']])
+
+
+# In[ ]:
+
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+# Assuming you have loaded the "links.csv" file
+links = pd.read_csv("P:\\links.csv")
+
+# Define the function to get IMDb rating from the IMDb page
+def get_imdb_rating(movieId):
+    imdb_url = f"https://www.imdb.com/title/tt{movieId}/"
+    response = requests.get(imdb_url)
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        rating = soup.find('span', {'itemprop': 'ratingValue'})
+        return float(rating.text) if rating else None
+    else:
+        return None
+
+# Apply the function to get IMDb ratings for each movie
+links['imdb_rating'] = links['imdbId'].apply(get_imdb_rating)
+
+# Find the movieId with the highest IMDb rating
+highest_imdb_movieId = links.loc[links['imdb_rating'].idxmax(), 'movieId']
+
+# Print the result
+print("MovieId with the highest IMDb rating:", highest_imdb_movieId)
+
+
+# In[ ]:
+
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+links = pd.read_csv("P:\\links.csv")
+
+def get_imdb_rating(movieId):
+    imdb_url = f"https://www.imdb.com/title/tt{movieId}/"
+    response = requests.get(imdb_url)
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        rating = soup.find('span', {'itemprop': 'ratingValue'})
+        return float(rating.text) if rating else None
+    else:
+        return None
+
+links['imdb_rating'] = links['imdbId'].apply(get_imdb_rating)
+
+highest_imdb_movieId = links.loc[links['imdb_rating'].idxmax(), 'movieId']
+
+
+print("MovieId with the highest IMDb rating:", highest_imdb_movieId)
+
+
+# In[ ]:
+
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+
+links = pd.read_csv("P:\\links.csv")
+
+sci_fi_links = links[links['genres'].str.contains('Sci-Fi')]
+
+
+def get_imdb_rating(movieId):
+    imdb_url = f"https://www.imdb.com/title/tt{movieId}/"
+    response = requests.get(imdb_url)
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        rating = soup.find('span', {'itemprop': 'ratingValue'})
+        return float(rating.text) if rating else None
+    else:
+        return None
+
+
+sci_fi_links['imdb_rating'] = sci_fi_links['imdbId'].apply(get_imdb_rating)
+
+
+highest_imdb_sci_fi_movieId = sci_fi_links.loc[sci_fi_links['imdb_rating'].idxmax(), 'movieId']
+
+print("MovieId of the Sci-Fi movie with the highest IMDb rating:", highest_imdb_sci_fi_movieId)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+# Assuming you have loaded the DataFrame with movie links
+links_df = pd.read_csv("P:\\links.csv")
+
+# Sample function to scrape IMDb reviews
+def scrape_imdb_reviews(imdb_id):
+    imdb_url = f"https://www.imdb.com/title/{imdb_id}/reviews"
+    response = requests.get(imdb_url)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        # Add your logic to extract review information from the soup
+        # Example: reviews = soup.find_all("div", class_="text show-more__control")
+        return None
+    else:
+        return None
+
+# Iterate through movies with more than 50 ratings
+for index, row in links_df.iterrows():
+    imdb_id = row['imdbId']
+    reviews = scrape_imdb_reviews(imdb_id)
+    # Add your logic to process the reviews, e.g., saving to a file or database
+
+
+# In[ ]:
+
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+# Load the links DataFrame
+links_df = pd.read_csv("P:\\links.csv")
+
+# Sample function to scrape IMDb reviews
+def scrape_imdb_reviews(imdb_id):
+    imdb_url = f"https://www.imdb.com/title/{imdb_id}/reviews"
+    response = requests.get(imdb_url)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        # Modify this code to suit the IMDb website structure
+        reviews = soup.find_all("div", class_="text show-more__control")
+        return [review.get_text(strip=True) for review in reviews]
+    else:
+        return None
+
+# Iterate through movies with more than 50 ratings
+for index, row in links_df.iterrows():
+    imdb_id = row['imdbId']
+    reviews = scrape_imdb_reviews(imdb_id)
+    
+    if reviews:
+        # Do something with the reviews, such as saving to a file or database
+        print(f"IMDB ID: {imdb_id}, Reviews: {reviews}")
+    else:
+        print(f"Failed to fetch reviews for IMDB ID: {imdb_id}")
+
+
+# In[ ]:
+
+
+import pandas as pd
+
+# Assuming you have loaded the original ratings data into a DataFrame
+ratings_df = pd.read_csv("P:\\ratings.csv")
+
+# Group by movieId and calculate the number of ratings for each movie
+movie_ratings_count = ratings_df.groupby('movieId')['rating'].count()
+
+# Filter movies with more than 50 user ratings
+popular_movies_subset = movie_ratings_count[movie_ratings_count > 50].index
+
+# Filter the original ratings data to get the subset
+subset_data = ratings_df[ratings_df['movieId'].isin(popular_movies_subset)]
+
+# Check the shape or display a sample of the subset data
+print("Shape of the subset data:", subset_data.shape)
+# or
+print("Sample of the subset data:")
+print(subset_data.head())
+
+
+# In[ ]:
+
+
+# Assuming you have a DataFrame called subset_data
+subset_data.to_csv('path/to/subset_data.csv', index=False)
+
+
+# In[ ]:
+
+
+import pandas as pd
+
+# Assuming you have loaded the original ratings data into a DataFrame
+ratings_df = pd.read_csv("P:\\ratings.csv")
+
+# Group by movieId and calculate the number of ratings for each movie
+movie_ratings_count = ratings_df.groupby('movieId')['rating'].count()
+
+# Filter movies with more than 50 user ratings
+popular_movies_subset = movie_ratings_count[movie_ratings_count > 50].index
+
+# Filter the original ratings data to get the subset
+subset_data = ratings_df[ratings_df['movieId'].isin(popular_movies_subset)]
+
+# Check the shape or display a sample of the subset data
+print("Shape of the subset data:", subset_data.shape)
+# or
+print("Sample of the subset data:")
+print(subset_data.head())
+
+
+# In[ ]:
+
+
+
+

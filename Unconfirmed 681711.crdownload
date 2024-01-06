@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+import pandas as pd
+
+# Assuming you have loaded the ratings data into a DataFrame
+ratings_df = pd.read_csv("P:\\ratings.csv")
+
+# Group by movieId and calculate the number of ratings for each movie
+movie_ratings_count = ratings_df.groupby('movieId')['rating'].count()
+
+# Filter movies with more than 50 user ratings
+popular_movies_subset = movie_ratings_count[movie_ratings_count > 50].index
+
+# Filter the original ratings data to get the subset
+subset_data = ratings_df[ratings_df['movieId'].isin(popular_movies_subset)]
+
+# Save the subset data to a CSV file
+subset_data.to_csv("P:\\subset_data.csv", index=False)
+
+
+# In[2]:
+
+
+import os
+
+directory_path = "P:\\"
+os.makedirs(directory_path, exist_ok=True)
+
+# Save the subset data to a CSV file
+subset_data.to_csv(os.path.join(directory_path, "subset_data.csv"), index=False)
+
+
+# In[6]:
+
+
+import pandas as pd
+
+# Assuming you have loaded the IMDb dataset into a DataFrame (replace 'path/to/imdb_dataset.csv' with your actual file path)
+imdb_dataset = pd.read_csv("P:\\subset_data.csv")
+
+# Identify the column containing IMDb ratings (replace 'imdbRating' with the actual column name)
+imdb_rating_column = 'imdbRating'
+
+# Find the row with the highest IMDb rating across all movies
+highest_rated_movie = imdb_dataset.loc[imdb_dataset[imdb_rating_column].idxmax()]
+
+# Retrieve the movieId from the row
+highest_rated_movie_id = highest_rated_movie['movieId']
+
+print("MovieId of the highest rated movie:", highest_rated_movie_id)
+
+
+# In[7]:
+
+
+import pandas as pd
+
+# Assuming you have loaded the IMDb dataset into a DataFrame (replace 'path/to/imdb_dataset.csv' with your actual file path)
+imdb_dataset = pd.read_csv("P:\\subset_data.csv")
+
+# Identify the column containing ratings (replace 'rating' with the actual column name)
+rating_column = 'rating'
+
+# Find the row with the highest rating across all movies
+highest_rated_movie = imdb_dataset.loc[imdb_dataset[rating_column].idxmax()]
+
+# Retrieve the movieId from the row
+highest_rated_movie_id = highest_rated_movie['movieId']
+
+print("MovieId of the highest rated movie:", highest_rated_movie_id)
+
+
+# In[8]:
+
+
+import pandas as pd
+
+# Assuming you have loaded the IMDb dataset into a DataFrame (replace 'path/to/imdb_dataset.csv' with your actual file path)
+imdb_dataset = pd.read_csv("P:\\subset_data.csv")
+
+# Identify the column containing IMDb ratings (replace 'rating' with the actual column name)
+rating_column = 'rating'
+
+# Find the row with the highest IMDb rating across all movies
+highest_rated_movie = imdb_dataset.loc[imdb_dataset[rating_column].idxmax()]
+
+# Retrieve the movieId from the row
+highest_rated_movie_id = highest_rated_movie['movieId']
+
+print("MovieId of the highest rated movie:", highest_rated_movie_id)
+
+
+# In[ ]:
+
+
+
+
